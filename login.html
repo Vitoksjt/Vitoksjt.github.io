@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图书管理系统 - 用户登录</title>
+    <script>
+    (function(){
+        // 不在登录页面自动完成登录；如果检测到记住的用户，仅预填表单，允许用户手动登录或选择自动登录
+        const auth = sessionStorage.getItem('authenticatedUser');
+        if (!auth) {
+            const rUser = localStorage.getItem('rememberedUser');
+            const rRole = localStorage.getItem('rememberedRole');
+            if (rUser) {
+                // 将预置信息暴露到页面，稍后在 DOMContentLoaded 中使用（不会自动跳转）
+                try { window.__prefillUser = { username: rUser, role: rRole }; } catch (e) {}
+            }
+        } else {
+            // 已有会话则继续跳转到对应页面
+            const role = sessionStorage.getItem('userRole');
+            if (role === 'admin') window.location.href = 'manage.html';
+            else window.location.href = 'browse.html';
+        }
+    })();
+    </script>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto+Slab:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* 登录页面特有样式 */
+        .login-container {
+            display: flex;
+            min-height: calc(100vh - 140px);
+        }
+        
+        .login-left {
+            flex: 1;
+            background: linear-gradient(135deg, #4a6fa5 0%, #2c3e50 100%);
+            color: white;
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .login-left h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        
+        .login-left p {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        
+        .login-features {
+            margin-top: 40px;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            font-size: 20px;
+        }
+        
+        .feature-text h4 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        
+        .feature-text p {
+            font-size: 14px;
+            margin: 0;
+            opacity: 0.8;
+        }
+        
+        .login-right {
+            flex: 1;
+            background-color: white;
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .login-form-container {
+            max-width: 400px;
+            width: 100%;
+            margin: 0 auto;
+        }
+        
+        .login-form-container h2 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        .login-form-container p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .login-form {
+            margin-top: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .input-with-icon {
+            position: relative;
+        }
+        
+        .input-with-icon i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+        
+        .input-with-icon input {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            font-family: 'Poppins', sans-serif;
+            transition: border-color 0.3s ease;
+        }
+        
+        .input-with-icon input:focus {
+            outline: none;
+            border-color: #4a6fa5;
+        }
+        
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .remember-me {
+            display: flex;
+            align-items: center;
+        }
+        
+        .remember-me input {
+            margin-right: 8px;
+        }
+        
+        .forgot-password {
+            color: #4a6fa5;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+        
+        .login-button {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        
+        .divider {
+            text-align: center;
+            position: relative;
+            margin: 30px 0;
+        }
+        
+        .divider::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 100%;
+            height: 1px;
+            background-color: #eee;
+        }
+        
+        .divider span {
+            background-color: white;
+            padding: 0 20px;
+            color: #666;
+            position: relative;
+        }
+        
+        .social-login {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .social-btn {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            background-color: white;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .social-btn:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .social-btn.wechat {
+            color: #09bb07;
+        }
+        
+        .social-btn.qq {
+            color: #12b7f5;
+        }
+        
+        .register-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+        }
+        
+        .register-link a {
+            color: #4a6fa5;
+            font-weight: 600;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 992px) {
+            .login-container {
+                flex-direction: column;
+            }
+            
+            .login-left,
+            .login-right {
+                padding: 40px 20px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .remember-forgot {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .social-login {
+                flex-direction: column;
+            }
+        }
+
+        /* 登录页面提示样式（更紧凑，放在表单上方显示） */
+        .login-hint {
+            margin: 8px 0 14px 0;
+            padding: 10px 12px;
+            background: #f1f7fb;
+            border-left: 4px solid #4a6fa5;
+            color: #2c3e50;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .login-hint.login-hint-top { margin-top: 6px; }
+        .login-hint code {
+            background: white;
+            border: 1px solid #e6eef8;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            margin: 0 4px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-book"></i> 图书管理系统
+            </a>
+            <ul class="nav-menu">
+                <li><a href="index.html"><i class="fas fa-home"></i> 首页</a></li>
+                <li><a href="browse.html"><i class="fas fa-book-open"></i> 浏览图书</a></li>
+                <li><a href="manage.html"><i class="fas fa-tasks"></i> 管理图书</a></li>
+                <li><a href="about.html"><i class="fas fa-info-circle"></i> 关于我们</a></li>
+                <li id="loginLi"><a id="loginLink" href="login.html" class="active"><i class="fas fa-sign-in-alt"></i> 登录</a></li>
+                <li id="logoutLi" style="display:none"><a id="logoutLink" href="#"><i class="fas fa-sign-out-alt"></i> 注销</a></li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容区 -->
+    <main>
+        <div class="login-container">
+            <div class="login-left">
+                <h2>欢迎回来</h2>
+                <p>登录图书管理系统，探索丰富的图书资源，管理您的借阅记录，享受个性化的阅读推荐服务。</p>
+                
+                <div class="login-features">
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="feature-text">
+                            <h4>海量图书资源</h4>
+                            <p>超过10万册电子图书和纸质图书资源</p>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                        <div class="feature-text">
+                            <h4>安全可靠</h4>
+                            <p>采用多重加密技术，保护您的个人信息安全</p>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <div class="feature-text">
+                            <h4>多端同步</h4>
+                            <p>支持Web端和移动端，随时随地访问您的图书数据</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="login-right">
+                <div class="login-form-container">
+                    <h2>用户登录</h2>
+                    <p>请输入您的账号信息以登录系统</p>
+
+                    <!-- 登录提示：演示用示例账号（已上移） -->
+                    <div class="login-hint login-hint-top" role="note" aria-label="示例账号">
+                        <strong>示例账号 (演示用)：</strong>
+                        管理员： <code>admin</code> / <code>admin</code>；
+                        普通用户： <code>user</code> / <code>user</code>
+                        <!-- <div style="margin-top:8px;color:#666;font-size:12px;">提示：请仅用于测试或演示，正式环境请使用真实账号。</div> -->
+                    </div>
+                    
+                    <form class="login-form" id="loginForm">
+                        <div class="form-group">
+                            <label for="username">用户名 / 邮箱</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-user"></i>
+                                <input type="text" id="username" placeholder="请输入用户名或邮箱" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="password">密码</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" id="password" placeholder="请输入密码" required>
+                            </div>
+                        </div>
+                        
+                        <div class="remember-forgot">
+                            <div class="remember-me">
+                                <input type="checkbox" id="rememberMe">
+                                <label for="rememberMe">记住我</label>
+                            </div>
+                            <a href="#" class="forgot-password">忘记密码？</a>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary login-button">登录</button>
+                        
+                        <div class="divider">
+                            <span>或使用以下方式登录</span>
+                        </div>
+                        
+                        <div class="social-login">
+                            <button type="button" class="social-btn wechat">
+                                <i class="fab fa-weixin"></i>
+                                微信登录
+                            </button>
+                            <button type="button" class="social-btn qq">
+                                <i class="fab fa-qq"></i>
+                                QQ登录
+                            </button>
+                        </div>
+                        
+                        <div class="register-link">
+                            还没有账号？ <a href="#" id="registerLink">立即注册</a>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3><i class="fas fa-book"></i> 图书管理系统</h3>
+                <p>一个现代化的图书管理解决方案，帮助您高效管理图书资源。</p>
+                <div class="social-icons">
+                    <a href="#" class="wechat-link"><i class="fab fa-weixin"></i>
+                        <span class="wechat-tooltip"><img src="img/微信好友.jpg" alt="微信好友"></span>
+                    </a>
+                    <a href="#" class="weibo-link"><i class="fab fa-weibo"></i>
+                        <span class="weibo-tooltip"><img src="img/a5.jpg" alt="微博"></span>
+                    </a>
+                    <a href="#"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>快速链接</h3>
+                <ul>
+                    <li><a href="index.html">首页</a></li>
+                    <li><a href="browse.html">浏览图书</a></li>
+                    <li><a href="manage.html">管理图书</a></li>
+                    <li><a href="about.html">关于我们</a></li>
+                    <li id="footerLoginLi"><a id="footerLoginLink" href="login.html">用户登录</a></li>
+                    <li id="footerLogoutLi" style="display:none"><a id="footerLogoutLink" href="#">注销</a></li>
+                </ul>   
+            </div>
+            <div class="footer-section">
+                <h3>联系我们</h3>
+                <p><i class="fas fa-map-marker-alt"></i> 永州市零陵区湖南科技学院</p>
+                <p><i class="fas fa-phone"></i> 18163XXXXXX</p>
+                    <p><i class="fas fa-envelope"></i> 18163XXXXXX@163com</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 图书管理系统 </p>
+            </div>
+        </footer>
+    
+        <!-- 注册模态框 -->
+        <div id="registerModal" class="modal">
+            <div class="modal-content" style="max-width: 500px;">
+                <span class="close-modal">&times;</span>
+                <h2>用户注册</h2>
+                <form id="registerForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="regUsername">用户名 *</label>
+                            <input type="text" id="regUsername" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="regEmail">邮箱 *</label>
+                            <input type="email" id="regEmail" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="regPassword">密码 *</label>
+                            <input type="password" id="regPassword" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="regConfirmPassword">确认密码 *</label>
+                            <input type="password" id="regConfirmPassword" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="regFullName">真实姓名</label>
+                        <input type="text" id="regFullName">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="regPhone">手机号码</label>
+                        <input type="tel" id="regPhone">
+                    </div>
+                    
+                    <div class="form-group">
+                        <input type="checkbox" id="regAgreement" required>
+                        <label for="regAgreement">我已阅读并同意 <a href="#">用户协议</a> 和 <a href="#">隐私政策</a></label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">注册账号</button>
+                </form>
+            </div>
+        </div>
+    
+        <script src="js/script.js"></script>
+        <script>
+            // 登录页面特定的JavaScript
+            document.addEventListener('DOMContentLoaded', function() {
+                // 登录表单提交
+                const loginForm = document.getElementById('loginForm');
+                if (loginForm) {
+                    // 使用与全局脚本相同的示例凭据（严格匹配）
+                    const validUsers = {
+                        'admin': { password: 'admin', redirect: 'manage.html', welcome: '管理员用户', role: 'admin' },
+                        'user': { password: 'user', redirect: 'browse.html', welcome: '普通用户', role: 'user' }
+                    };
+
+                    loginForm.addEventListener('submit', function(e) {
+                        e.preventDefault();
+
+                        const username = document.getElementById('username').value.trim();
+                        const password = document.getElementById('password').value;
+                        const rememberMe = document.getElementById('rememberMe').checked;
+
+                        if (!username || !password) {
+                            alert('请输入用户名和密码！');
+                            return;
+                        }
+
+                        const user = validUsers[username];
+                        if (user && password === user.password) {
+                            alert(`登录成功！欢迎${user.welcome}。`);
+
+                            // 在会话中记录已认证用户和角色
+                            sessionStorage.setItem('authenticatedUser', username);
+                            sessionStorage.setItem('userRole', user.role);
+
+                            if (rememberMe) {
+                                localStorage.setItem('rememberedUser', username);
+                                localStorage.setItem('rememberedRole', user.role);
+                            }
+
+                            window.location.href = user.redirect;
+                        } else {
+                            alert('用户名或密码错误，请重试！\n\n测试账号：\n管理员 - admin / admin\n普通用户 - user / user');
+                        }
+                    });
+                }
+                
+                // 显示注册模态框
+                const registerLink = document.getElementById('registerLink');
+                const registerModal = document.getElementById('registerModal');
+                const closeModal = document.querySelector('.close-modal');
+                
+                if (registerLink && registerModal) {
+                    registerLink.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        registerModal.style.display = 'block';
+                    });
+                    
+                    closeModal.addEventListener('click', function() {
+                        registerModal.style.display = 'none';
+                    });
+                    
+                    // 点击模态框外部关闭
+                    window.addEventListener('click', function(e) {
+                        if (e.target === registerModal) {
+                            registerModal.style.display = 'none';
+                        }
+                    });
+                }
+                
+                // 注册表单提交
+                const registerForm = document.getElementById('registerForm');
+                if (registerForm) {
+                    registerForm.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        
+                        const password = document.getElementById('regPassword').value;
+                        const confirmPassword = document.getElementById('regConfirmPassword').value;
+                        
+                        if (password !== confirmPassword) {
+                            alert('两次输入的密码不一致！');
+                            return;
+                        }
+                        
+                        alert('注册成功！请使用新账号登录。');
+                        registerModal.style.display = 'none';
+                        registerForm.reset();
+                    });
+                }
+                
+                // 社交登录按钮 - 使用二维码扫码模拟登录（微信 / QQ）
+                console.log('login: initializing social login handlers');
+
+                function openSocialModalFor(btnElem) {
+                    const isWechat = btnElem.classList.contains('wechat');
+                    const platform = isWechat ? '微信' : 'QQ';
+                    const modal = document.getElementById('socialQRModal');
+                    const title = document.getElementById('socialModalTitle');
+                    const msg = document.getElementById('socialModalMsg');
+                    const qrImg = document.getElementById('socialQRImage');
+                    const status = document.getElementById('socialStatus');
+
+                    title.textContent = platform + ' 登录';
+                    msg.textContent = '请使用手机' + platform + '扫描二维码进行登录（演示模拟）。';
+                    qrImg.src = isWechat ? 'img/微信好友.jpg' : 'img/a5.jpg';
+                    status.textContent = '等待扫码...';
+
+                    modal.style.display = 'block';
+
+                    // 模拟扫描成功的定时器（若用户未手动点击“模拟扫码成功”）
+                    let timer = setTimeout(() => {
+                        completeSocialLogin(platform);
+                    }, 4000);
+
+                    // 绑定按钮事件（防御性检查）
+                    const simulateBtn = document.getElementById('simulateScanBtn');
+                    const cancelBtn = document.getElementById('cancelScanBtn');
+                    if (simulateBtn) simulateBtn.onclick = function() { clearTimeout(timer); completeSocialLogin(platform); };
+                    if (cancelBtn) cancelBtn.onclick = function() { clearTimeout(timer); modal.style.display = 'none'; status.textContent = ''; };
+
+                    // 绑定关闭图标
+                    document.querySelectorAll('.social-close').forEach(el => el.onclick = function() { clearTimeout(timer); modal.style.display = 'none'; status.textContent = ''; });
+
+                    console.log('login: opened social modal for', platform);
+                }
+
+                // 使用事件委托以防动态生成或其它绑定失败
+                document.addEventListener('click', function(e) {
+                    const btn = e.target.closest && e.target.closest('.social-btn');
+                    if (btn) {
+                        e.preventDefault();
+                        openSocialModalFor(btn);
+                    }
+                });
+
+                // 兼容性：若元素存在则也绑定直接监听器并添加可见点击反馈
+                document.querySelectorAll('.social-btn').forEach(btn => {
+                    btn.addEventListener('click', function(e){ e.preventDefault(); openSocialModalFor(this); });
+                    btn.addEventListener('click', function(){ this.classList.add('clicked-debug'); setTimeout(()=>this.classList.remove('clicked-debug'),200); });
+                });
+
+                // 暴露到全局，方便在 Console 手动触发调试
+                window.openSocialModalFor = openSocialModalFor;
+
+                function completeSocialLogin(platform) {
+                    console.log('completeSocialLogin invoked for', platform);
+                    const modal = document.getElementById('socialQRModal');
+                    const status = document.getElementById('socialStatus');
+                    status.textContent = platform + ' 扫码成功，正在登录...';
+                    setTimeout(() => {
+                        // 模拟登录为普通用户（user），如需管理员请使用表单登录
+                        sessionStorage.setItem('authenticatedUser', 'user');
+                        sessionStorage.setItem('userRole', 'user');
+                        modal.style.display = 'none';
+                        alert(platform + ' 登录成功（演示）：已以 普通用户 登录。');
+                        window.location.href = 'browse.html';
+                    }, 800);
+                }
+                
+                // 忘记密码
+                const forgotPassword = document.querySelector('.forgot-password');
+                if (forgotPassword) {
+                    forgotPassword.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const email = prompt('请输入您的注册邮箱：');
+                        if (email) {
+                            alert(`重置密码链接已发送到 ${email}，请查看您的邮箱。\n（此功能为演示版本）`);
+                        }
+                    });
+                }
+                
+                // 检查是否有记住的用户名
+                const rememberedUser = localStorage.getItem('rememberedUser');
+                if (rememberedUser && document.getElementById('username')) {
+                    document.getElementById('username').value = rememberedUser;
+                    document.getElementById('rememberMe').checked = true;
+                }
+            });
+            
+            // 模态框样式
+            const style = document.createElement('style');
+            style.textContent = `
+                .modal {
+                    display: none;
+                    position: fixed;
+                    z-index: 1002;
+                    left: 0;
+                    top: 0;
+                    width: 100%;
+                    height: 100%;
+                    background-color: rgba(0, 0, 0, 0.5);
+                    overflow: auto;
+                }
+                
+                .modal-content {
+                    background-color: white;
+                    margin: 10% auto;
+                    padding: 30px;
+                    border-radius: 10px;
+                    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+                    position: relative;
+                }
+                
+                .close-modal {
+                    position: absolute;
+                    top: 15px;
+                    right: 20px;
+                    font-size: 28px;
+                    cursor: pointer;
+                    color: #999;
+                }
+                
+                .close-modal:hover {
+                    color: #333;
+                }
+                .social-btn { cursor: pointer; }
+                .social-btn:active { transform: translateY(1px); }
+                .clicked-debug { box-shadow: 0 0 0 4px rgba(74,111,165,0.25); transition: box-shadow 120ms ease; }
+            `;
+            document.head.appendChild(style);
+        </script>
+    </body>
+    </html>

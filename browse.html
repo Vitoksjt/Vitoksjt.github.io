@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图书管理系统 - 浏览图书</title>
+    <script>
+    (function(){
+        // 如果没有已认证会话，直接跳回登录页，不从 localStorage 自动恢复会话
+        const filename = window.location.pathname.split('/').pop() || 'browse.html';
+        if (!sessionStorage.getItem('authenticatedUser') && filename !== 'login.html') {
+            window.location.href = 'login.html';
+        }
+    })();
+    </script>
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto+Slab:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-book"></i> 图书管理系统
+            </a>
+            <ul class="nav-menu">
+                <li><a href="index.html"><i class="fas fa-home"></i> 首页</a></li>
+                <li><a href="browse.html" class="active"><i class="fas fa-book-open"></i> 浏览图书</a></li>
+                <li><a href="manage.html"><i class="fas fa-tasks"></i> 管理图书</a></li>
+                <li><a href="about.html"><i class="fas fa-info-circle"></i> 关于我们</a></li>
+                <li id="loginLi"><a id="loginLink" href="login.html"><i class="fas fa-sign-in-alt"></i> 登录</a></li>
+                <li id="logoutLi" style="display:none"><a id="logoutLink" href="#"><i class="fas fa-sign-out-alt"></i> 注销</a></li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容区 -->
+    <main>
+        <!-- 搜索栏 -->
+        <section class="search-section">
+            <div class="container">
+                <h2>图书检索</h2>
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="输入书名、作者或关键词...">
+                    <button id="searchBtn" class="btn btn-primary btn-small">
+                        <i class="fas fa-search"></i> 搜索
+                    </button>
+                </div>
+                <div class="filter-options">
+                    <label for="categoryFilter" class="sr-only">选择分类</label>
+                    <select id="categoryFilter" title="选择分类筛选">
+                        <option value="">所有分类</option>
+                        <option value="technology">计算机技术</option>
+                        <option value="literature">文学小说</option>
+                        <option value="science">自然科学</option>
+                        <option value="history">历史人文</option>
+                        <option value="art">艺术设计</option>
+                    </select>
+                    <label for="statusFilter" class="sr-only">选择状态</label>
+                    <select id="statusFilter" title="选择状态筛选">
+                        <option value="">所有状态</option>
+                        <option value="available">可借阅</option>
+                        <option value="borrowed">已借出</option>
+                    </select>
+                    <label for="sortBy" class="sr-only">选择排序方式</label>
+                    <select id="sortBy" title="选择排序方式">
+                        <option value="">默认排序</option>
+                        <option value="title">按书名</option>
+                        <option value="author">按作者</option>
+                        <option value="year">按年份</option>
+                        <option value="year-desc">按年份(降序)</option>
+                    </select>
+                    <button id="resetFilters" class="btn btn-outline btn-small">重置筛选</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 图书列表 -->
+        <section class="books-section">
+            <div class="container">
+                <h2>图书列表 <span id="bookCount">(0本)</span></h2>
+                <div class="books-grid" id="booksGrid">
+                </div>
+                <div class="pagination">
+                    <button id="prevPage" class="btn btn-outline btn-small" disabled><i class="fas fa-chevron-left"></i> 上一页</button>
+                    <span id="pageInfo">第 <span id="currentPage">1</span> 页，共 <span id="totalPages">1</span> 页</span>
+                    <button id="nextPage" class="btn btn-outline btn-small">下一页 <i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3><i class="fas fa-book"></i> 图书管理系统</h3>
+                <p>一个现代化的图书管理解决方案，帮助您高效管理图书资源。</p>
+                <div class="social-icons">
+                    <a href="#" class="wechat-link"><i class="fab fa-weixin"></i>
+                        <span class="wechat-tooltip"><img src="img/微信好友.jpg" alt="微信好友"></span>
+                    </a>
+                    <a href="#" class="weibo-link"><i class="fab fa-weibo"></i>
+                        <span class="weibo-tooltip"><img src="img/a5.jpg" alt="微博"></span>
+                    </a>
+                    <a href="#"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>快速链接</h3>
+                <ul>
+                    <li><a href="index.html">首页</a></li>
+                    <li><a href="browse.html">浏览图书</a></li>
+                    <li><a href="manage.html">管理图书</a></li>
+                    <li><a href="about.html">关于我们</a></li>
+                    <li id="footerLoginLi"><a id="footerLoginLink" href="login.html">用户登录</a></li>
+                    <li id="footerLogoutLi" style="display:none"><a id="footerLogoutLink" href="#">注销</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>联系我们</h3>
+                <p><i class="fas fa-map-marker-alt"></i> 永州市零陵区湖南科技学院</p>
+                <p><i class="fas fa-phone"></i> 18163XXXXXX</p>
+                <p><i class="fas fa-envelope"></i> 18163XXXXXX@163com</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 图书管理系统 </p>
+        </div>
+    </footer>
+
+    <!-- 图书详情弹窗 -->
+    <div id="bookModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div id="modalContent">
+                <!-- 图书详情将通过JavaScript动态加载 -->
+            </div>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+    <script src="js/browse-script.js"></script>
+</body>
+</html>

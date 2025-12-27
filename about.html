@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图书管理系统 - 关于我们</title>
+    <script>
+    (function(){
+        // 如果没有已认证会话，直接跳回登录页，不从 localStorage 自动恢复会话
+        const filename = window.location.pathname.split('/').pop() || 'about.html';
+        if (!sessionStorage.getItem('authenticatedUser') && filename !== 'login.html') {
+            window.location.href = 'login.html';
+        }
+    })();
+    </script>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto+Slab:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* 关于页面特有样式 */
+        .about-hero {
+            background: linear-gradient(135deg, #4a6fa5 0%, #2c3e50 100%);
+            color: white;
+            padding: 80px 20px;
+            text-align: center;
+        }
+        
+        .about-hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        
+        .about-hero p {
+            font-size: 20px;
+            max-width: 800px;
+            margin: 0 auto 40px;
+            opacity: 0.9;
+        }
+        
+        .mission-section {
+            padding: 80px 20px;
+            background-color: white;
+        }
+        
+        .mission-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+        
+        .mission-text h2 {
+            font-size: 36px;
+            margin-bottom: 30px;
+            color: #2c3e50;
+        }
+        
+        .mission-text p {
+            font-size: 18px;
+            line-height: 1.8;
+            color: #555;
+            margin-bottom: 20px;
+        }
+        
+        .mission-image img {
+            width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .team-section {
+            padding: 80px 20px;
+            background-color: #f8f9fa;
+        }
+        
+        .team-section h2 {
+            text-align: center;
+            font-size: 36px;
+            margin-bottom: 50px;
+            color: #2c3e50;
+        }
+        
+        .team-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 40px;
+        }
+        
+        .team-member {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .team-member:hover {
+            transform: translateY(-10px);
+        }
+        
+        .member-photo {
+            height: 250px;
+            overflow: hidden;
+        }
+        
+        .member-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .member-info {
+            padding: 25px;
+        }
+        
+        .member-name {
+            font-size: 22px;
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+        
+        .member-role {
+            color: #4a6fa5;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .member-desc {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .member-social {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .member-social a {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4a6fa5;
+            transition: all 0.3s ease;
+        }
+        
+        .member-social a:hover {
+            background-color: #4a6fa5;
+            color: white;
+        }
+        
+        .features-section {
+            padding: 80px 20px;
+            background-color: white;
+        }
+        
+        .features-section h2 {
+            text-align: center;
+            font-size: 36px;
+            margin-bottom: 50px;
+            color: #2c3e50;
+        }
+        
+        .features-timeline {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .features-timeline::before {
+            content: '';
+            position: absolute;
+            left: 30px;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background-color: #4a6fa5;
+        }
+        
+        .timeline-item {
+            display: flex;
+            margin-bottom: 40px;
+            position: relative;
+        }
+        
+        .timeline-icon {
+            width: 60px;
+            height: 60px;
+            background-color: #4a6fa5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            z-index: 1;
+            flex-shrink: 0;
+            margin-right: 30px;
+        }
+        
+        .timeline-content {
+            flex: 1;
+            background-color: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+        }
+        
+        .timeline-content h3 {
+            font-size: 22px;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        .timeline-content p {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .contact-section {
+            padding: 80px 20px;
+            background-color: #f8f9fa;
+        }
+        
+        .contact-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+        }
+        
+        .contact-info h2 {
+            font-size: 36px;
+            margin-bottom: 30px;
+            color: #2c3e50;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 25px;
+        }
+        
+        .contact-icon {
+            width: 50px;
+            height: 50px;
+            background-color: #4a6fa5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+        
+        .contact-text h3 {
+            font-size: 20px;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        
+        .contact-text p {
+            color: #666;
+        }
+        
+        .contact-form {
+            background-color: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .contact-form h3 {
+            font-size: 24px;
+            margin-bottom: 25px;
+            color: #2c3e50;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        @media (max-width: 992px) {
+            .mission-content,
+            .contact-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .features-timeline::before {
+                left: 25px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .about-hero h1 {
+                font-size: 36px;
+            }
+            
+            .about-hero p {
+                font-size: 18px;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-book"></i> 图书管理系统
+            </a>
+            <ul class="nav-menu">
+                <li><a href="index.html"><i class="fas fa-home"></i> 首页</a></li>
+                <li><a href="browse.html"><i class="fas fa-book-open"></i> 浏览图书</a></li>
+                <li><a href="manage.html"><i class="fas fa-tasks"></i> 管理图书</a></li>
+                <li><a href="about.html" class="active"><i class="fas fa-info-circle"></i> 关于我们</a></li>
+                <li><a href="login.html"><i class="fas fa-sign-in-alt"></i> 登录</a></li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容区 -->
+    <main>
+        
+        <section class="about-hero">
+            <h1>关于图书管理系统</h1>
+            <p>我们致力于为图书馆、学校和个人提供高效、智能的图书管理解决方案，让知识管理变得更简单、更便捷。</p>
+            <a href="#contact" class="btn btn-primary">联系我们</a>
+        </section>
+        
+       
+    <section class="mission-section">
+        <div class="mission-content">
+            <div class="mission-text">
+                <h2>湖南科技学院图书馆使命与愿景</h2>
+                <p>湖南科技学院图书管理系统由信息工程学院师生团队于2018年开发，旨在解决传统图书管理模式效率不高、资源利用率低的问题。作为一所应用型本科院校，我们致力于将信息技术与图书馆服务深度融合。</p>
+                <p>通过现代化技术手段，我们构建了功能完善、操作便捷的图书管理平台，服务全校师生高效利用图书资源，支持教学科研工作。系统不仅提升了图书馆管理效率，也为学生提供了实践创新的平台。</p>
+                <p>我们的愿景是建设智慧化、服务型的现代高校图书馆，打造区域性图书资源共享中心，为学校建设特色鲜明的高水平应用型大学提供有力的信息资源保障，助力每一位湖科学子成长为栋梁之材。</p>
+                <p>秉承"德才兼备，自强不息"的校训精神，图书馆将持续优化服务，推进数字化转型，为师生创造更加优质的学习研究环境。</p>
+            </div>
+            <div class="mission-image">
+                <img src="https://images.unsplash.com/photo-1521587760476-6c12a4b040da?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="湖南科技学院图书馆">
+            </div>
+        </div>
+    </section>
+        
+        
+        
+        <!-- 发展历程 -->
+        <section class="features-section">
+            <h2>发展历程</h2>
+            <div class="features-timeline">
+                <div class="timeline-item">
+                    <div class="timeline-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <h3>项目启动</h3>
+                        <p>2018年9月，湖南科技学院信息工程学院成立项目小组，针对校园图书馆管理现状进行调研，确定开发适合本校的图书管理系统，旨在提高图书馆管理效率和学生借阅体验。</p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <h3>第一版开发</h3>
+                        <p>2019年3月，学院师生合作完成系统第一版开发，包含图书检索、借阅管理、读者管理等基础功能，首先在信息工程学院内部试点使用，收集用户反馈。</p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <h3>全校推广</h3>
+                        <p>2019年9月，系统经过优化后正式在湖南科技学院全校范围推广使用，覆盖主校区图书馆和各个分院图书室，服务全校近2万名师生。</p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-icon">
+                        <i class="fas fa-expand"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <h3>智慧图书馆建设</h3>
+                        <p>2023年6月，引入RFID智能图书管理、人脸识别借阅、大数据分析等先进技术，建成智慧图书馆示范点，被列为湖南省高校图书馆信息化建设典型案例。</p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-icon">
+                        <i class="fas fa-award"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <h3>未来展望</h3>
+                        <p>2025年1月，计划与省内更多高校图书馆系统对接，构建区域性高校图书资源共享平台，同时探索AR/VR技术在图书馆服务中的应用，打造沉浸式阅读体验。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 联系我们 -->
+        <section class="contact-section" id="contact">
+            <div class="contact-container">
+                <div class="contact-info">
+                    <h2>联系我们</h2>
+                    <p>如果您对我们的产品有任何疑问或建议，欢迎随时与我们联系。</p>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="contact-text">
+                            <h3>公司地址</h3>
+                            <p>永州市零陵区湖南科技学院路<br>知行楼406室</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="contact-text">
+                            <h3>联系电话</h3>
+                            <p>18163XXXXXX<br>工作日 9:00-18:00</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="contact-text">
+                            <h3>电子邮箱</h3>
+                            <p>18163XXXXXX@163com<br>support@library.com</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="contact-form">
+                    <h3>发送消息</h3>
+                    <form id="contactForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="contactName">姓名 *</label>
+                                <input type="text" id="contactName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="contactEmail">邮箱 *</label>
+                                <input type="email" id="contactEmail" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="contactSubject">主题</label>
+                            <input type="text" id="contactSubject">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="contactMessage">消息 *</label>
+                            <textarea id="contactMessage" required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">发送消息</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3><i class="fas fa-book"></i> 图书管理系统</h3>
+                <p>一个现代化的图书管理解决方案，帮助您高效管理图书资源。</p>
+                <div class="social-icons">
+                    <a href="#" class="wechat-link"><i class="fab fa-weixin"></i>
+                        <span class="wechat-tooltip"><img src="img/微信好友.jpg" alt="微信好友"></span>
+                    </a>
+                    <a href="#" class="weibo-link"><i class="fab fa-weibo"></i>
+                        <span class="weibo-tooltip"><img src="img/a5.jpg" alt="微博"></span>
+                    </a>
+                    <a href="#"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>快速链接</h3>
+                <ul>
+                    <li><a href="index.html">首页</a></li>
+                    <li><a href="browse.html">浏览图书</a></li>
+                    <li><a href="manage.html">管理图书</a></li>
+                    <li><a href="about.html">关于我们</a></li>
+                    <li><a href="login.html">用户登录</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>联系我们</h3>
+                <p><i class="fas fa-map-marker-alt"></i> 永州市零陵区湖南科技学院</p>
+                <p><i class="fas fa-phone"></i> 18163XXXXXX</p>
+                <p><i class="fas fa-envelope"></i> 18163XXXXXX@163com</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 图书管理系统 </p>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+    <script>
+        // 关于页面特定的JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            // 联系表单提交
+            const contactForm = document.getElementById('contactForm');
+            if (contactForm) {
+                contactForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const name = document.getElementById('contactName').value;
+                    const email = document.getElementById('contactEmail').value;
+                    const message = document.getElementById('contactMessage').value;
+                    
+                    if (name && email && message) {
+                        alert('感谢您的留言！我们会尽快回复您。');
+                        contactForm.reset();
+                    } else {
+                        alert('请填写所有必填字段！');
+                    }
+                });
+            }
+            
+            // 平滑滚动到联系部分
+            document.querySelectorAll('a[href="#contact"]').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const contactSection = document.getElementById('contact');
+                    if (contactSection) {
+                        contactSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
